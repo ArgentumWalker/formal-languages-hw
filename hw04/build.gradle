@@ -1,0 +1,37 @@
+group 'ru.spbau.svidchenko'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "http://xbib.org/repository"
+        }
+    }
+    dependencies {
+        classpath 'org.xbib.gradle.plugin:gradle-plugin-jflex:1.1.0'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'org.xbib.gradle.plugin.jflex'
+
+sourceCompatibility = 1.8
+
+mainClassName = "ru.spbau.svidchenko.FL.hw04.Main"
+
+repositories {
+    mavenCentral()
+}
+
+run {
+    if (project.hasProperty("ath")) {
+        args = ["${ath}"]
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile group: 'de.jflex', name: 'jflex', version: '1.6.1'
+}
