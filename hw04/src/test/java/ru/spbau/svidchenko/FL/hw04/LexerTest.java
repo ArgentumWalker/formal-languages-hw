@@ -12,7 +12,7 @@ public class LexerTest {
 
     @Test
     @SuppressWarnings("all")
-    public void primitives() {
+    public void primitives() throws Lexer.LexingException {
         //Operation lexems
         Assert.assertEquals(OperationLexem.Type.PLUS, ((OperationLexem)Lexer.lex("+").get(0)).getType());
         Assert.assertEquals(OperationLexem.Type.MINUS, ((OperationLexem)Lexer.lex("-").get(0)).getType());
@@ -58,6 +58,9 @@ public class LexerTest {
         Assert.assertEquals(1.0, ((LiteralLexem<Double>)Lexer.lex("0.1e+1").get(0)).getValue(), 1e-10);
         Assert.assertEquals(-1.0, ((LiteralLexem<Double>)Lexer.lex("-1").get(0)).getValue(), 1e-10);
         Assert.assertEquals(0.1, ((LiteralLexem<Double>)Lexer.lex(".1").get(0)).getValue(), 1e-10);
+        //Other
+        Assert.assertTrue(Lexer.lex(":=").get(0) instanceof AssignLexem);
+        Assert.assertEquals("//abcd", ((CommentLexem)Lexer.lex("//abcd").get(0)).getText());
     }
 
     @Test

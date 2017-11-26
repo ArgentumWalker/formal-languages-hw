@@ -35,6 +35,14 @@ import jflex.sym;
   private SeparatorLexem separator(SeparatorLexem.Type type) {
     return new SeparatorLexem(type, yyline, yycolumn, yytext().length());
   }
+
+  private CommentLexem comment(String comment) {
+    return new CommentLexem(comment, yyline, yycolumn, yytext().length());
+  }
+
+  private AssignLexem assign() {
+    return new AssignLexem(yyline, yycolumn, yytext().length());
+  }
 %}
 
 /* main character classes */
@@ -93,7 +101,8 @@ Exponent = [eE] [+-] [0-9]+
     ";"  {return separator(SeparatorLexem.Type.STATEMENT_END);}
 
     /*Other*/
-    {Comment}       {/* ignore */}
+    ":="            {return assign();}
+    {Comment}       {return comment(yytext());}
     {WhiteSpace}    {/* ignore */}
     {Identifier}    {return identifier(yytext());}
 }

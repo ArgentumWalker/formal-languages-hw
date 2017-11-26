@@ -3,10 +3,7 @@ package ru.spbau.svidchenko.FL.hw04;
 
 import ru.spbau.svidchenko.FL.hw04.language.Lexem;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Scanner;
 
 public class Main {
@@ -19,8 +16,12 @@ public class Main {
             for (Lexem lexem : Lexer.lex(input)) {
                 System.out.println(lexem.toString());
             }
-        } catch (Exception e) {
-            System.out.println("Exception: " + e.toString());
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        } catch (IOException e) {
+            System.out.println("Error when reading file");
+        } catch (Lexer.LexingException e) {
+            System.out.println("Syntax error at " + e.row + ":" + e.col);
         }
     }
 }

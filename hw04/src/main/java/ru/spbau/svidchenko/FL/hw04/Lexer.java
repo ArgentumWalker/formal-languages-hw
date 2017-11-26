@@ -11,15 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Lexer {
-    public static List<Lexem> lex(CharSequence chars) {
+    public static List<Lexem> lex(CharSequence chars) throws LexingException {
         return lex(new Scanner(new StringReader(String.valueOf(chars))));
     }
 
-    public static List<Lexem> lex(InputStream stream) {
+    public static List<Lexem> lex(InputStream stream) throws LexingException {
         return lex(new Scanner(new InputStreamReader(stream)));
     }
 
-    private static List<Lexem> lex(Scanner scanner) {
+    private static List<Lexem> lex(Scanner scanner) throws LexingException {
         List<Lexem> lexems = new ArrayList<>();
         try {
             Lexem lexem = scanner.yylex();
@@ -28,8 +28,27 @@ public class Lexer {
                 lexem = scanner.yylex();
             }
         } catch (IOException e) {
-            //finish parsing
+            if (lexems.isEmpty()) {
+                throw new LexingException();
+            } else {
+                throw new LexingException(lexems.get(lexems.size() - 1).getColumn(), lexems.get(lexems.size() - 1).getLine());
+            }
         }
         return lexems;
+    }
+
+    public static class LexingException extends Exception {
+        public final long row;
+        public final long col;
+
+        private LexingException(){
+            this(1, 1);
+        }
+
+        private LexingException(long col, long row) {
+            this.row = row;
+            this.col = col;
+        }
+
     }
 }
