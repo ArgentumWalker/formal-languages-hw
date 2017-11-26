@@ -1,19 +1,16 @@
 grammar lang;
 
 //LEXER RULES
-//Literal operations
 EqOp: '<' | '<=' | '==' | '>=' | '>' | '!=';
 BoolOp: '||' | '&&';
 MdOp: '*' | '/' | '%';
 PmOp: '+' | '-';
-//Array operations
-BinArrOp: '<<' | '--';
-ArrLength: '.len';
 
 //Complex
 Identifier: [a-zA-Z_][0-9a-zA-Z_]*;
+Literal: '-'?[1-9][0-9]* | '0';
 Path: [0-9a-zA-Z_.-]+ ('/'[0-9a-zA-Z_.-]+)*;
-Literal: '-'?[0-9]+;
+
 
 //Skip
 LineComment
@@ -43,9 +40,8 @@ statement
     | import_st
     ;
 
-import_st: 'import' '"' Path '"';
-
 return_st: 'return' expression;
+import_st: 'import' '"' Path '"';
 
 //Function
 
@@ -65,19 +61,14 @@ valueAssignment: Identifier '=' expression;
 assignment: Identifier ':=' expression;
 
 //Complex statements
-while_st: 'while' '(' integerExpression ')' blockWithBraces;
+while_st: 'while' '(' expression ')' blockWithBraces;
 
-if_st: 'if' '(' integerExpression ')' blockWithBraces ('else' blockWithBraces)?;
+if_st: 'if' '(' expression ')' blockWithBraces ('else' blockWithBraces)?;
 
 //Expression
-expression: integerExpression | arrayExpression | unknownTypeExpression | '(' expression ')';
+expression: binaryExpression | '(' expression ')' | atomicExpression;
 
-unknownTypeExpression: functionCall | Identifier | getElement;
-
-//Double expression
-integerExpression: binaryExpression | '(' integerExpression ')' | atomicExpression;
-
-atomicExpression: Literal | lenArrayExpression;
+atomicExpression: functionCall | Identifier | Literal;
 
 binaryExpression: eqExpression | boolExpression | mdExpression | pmExpression;
 
@@ -91,17 +82,7 @@ pmExpression: pmExpressionHelper PmOp (pmExpressionHelper | pmExpression);
 pmExpressionHelper: mdExpressionHelper | mdExpression;
 
 mdExpression: mdExpressionHelper MdOp (mdExpressionHelper | mdExpression);
-mdExpressionHelper: unknownTypeExpression | atomicExpression | '(' integerExpression ')';
+mdExpressionHelper: atomicExpression | '(' expression ')';
 
-lenArrayExpression: (unknownTypeExpression | arrayBase | '(' arrayExpression ')') ArrLength;
 
-//Array expression
-arrayExpression: arrayOperationExpression | unknownTypeExpression | arrayBase | '(' arrayExpression ')';
 
-arrayOperationExpression: arrayOperationExpressionLeft arrayOperationExpressionRight+;
-arrayOperationExpressionLeft: unknownTypeExpression | arrayBase;
-arrayOperationExpressionRight: BinArrOp (unknownTypeExpression | arrayBase | atomicExpression | '(' expression ')');
-
-//Arrays
-arrayBase: '[' (expression (',' expression)*)? ']';
-getElement: '(' arrayExpression ')' '['(unknownTypeExpression | integerExpression)']';

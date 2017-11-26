@@ -113,7 +113,7 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
     @Override
     public ParametersNode visitParameters(langParser.ParametersContext ctx) {
         if (ctx == null) {
-            throw new NullParsingException();
+            return new ParametersNode(Collections.emptyList(), -1, -1);
         }
         if (ctx.Identifier() != null) {
             return new ParametersNode(ctx.Identifier().stream().map(TerminalNode::getText).collect(Collectors.toList()),
@@ -133,11 +133,11 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
 
     @Override
     public ArgumentsNode visitArguments(langParser.ArgumentsContext ctx) {
-        if (ctx.expression() != null) {
+        if (ctx != null) {
             return new ArgumentsNode(ctx.expression().stream().map(this::visitExpression).collect(Collectors.toList()),
                     ctx.start.getLine(), ctx.start.getCharPositionInLine());
         }
-        return new ArgumentsNode(Collections.emptyList(), ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        return new ArgumentsNode(Collections.emptyList(), -1, -1);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
             throw new NullParsingException();
         }
         return new WhileStatement(ctx.start.getLine(), ctx.start.getCharPositionInLine(),
-                visitIntegerExpression(ctx.integerExpression()), visitBlockWithBraces(ctx.blockWithBraces()));
+                visitExpression(ctx.expression()), visitBlockWithBraces(ctx.blockWithBraces()));
     }
 
     @Override
@@ -187,12 +187,12 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
         }
         if (ctx.blockWithBraces().size() > 1) {
             return new IfStatement(ctx.start.getLine(), ctx.start.getCharPositionInLine(),
-                    visitIntegerExpression(ctx.integerExpression()),
+                    visitExpression(ctx.expression()),
                     visitBlockWithBraces(ctx.blockWithBraces().get(0)),
                     visitBlockWithBraces(ctx.blockWithBraces().get(1)));
         }
         return new IfStatement(ctx.start.getLine(), ctx.start.getCharPositionInLine(),
-                visitIntegerExpression(ctx.integerExpression()),
+                visitExpression(ctx.expression()),
                 visitBlockWithBraces(ctx.blockWithBraces().get(0)),
                 null);
     }
@@ -205,19 +205,22 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
         if (ctx.expression() != null) {
             return visitExpression(ctx.expression());
         }
-        if (ctx.arrayExpression() != null) {
+        if (ctx.binaryExpression() != null) {
+            return visitBinaryExpression(ctx.binaryExpression());
+        }
+        /*if (ctx.arrayExpression() != null) {
             return visitArrayExpression(ctx.arrayExpression());
+        }*/
+        if (ctx.atomicExpression() != null) {
+            return visitAtomicExpression(ctx.atomicExpression());
         }
-        if (ctx.integerExpression() != null) {
-            return visitIntegerExpression(ctx.integerExpression());
-        }
-        if (ctx.unknownTypeExpression() != null) {
+        /*if (ctx.unknownTypeExpression() != null) {
             return visitUnknownTypeExpression(ctx.unknownTypeExpression());
-        }
+        }*/
         throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
     }
 
-    @Override
+    /*@Override
     public Expression visitUnknownTypeExpression(langParser.UnknownTypeExpressionContext ctx) {
         if (ctx == null) {
             throw new NullParsingException();
@@ -246,7 +249,7 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
             return visitBinaryExpression(ctx.binaryExpression());
         }
         throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }
+    }*/
 
     @Override
     public Expression visitAtomicExpression(langParser.AtomicExpressionContext ctx) {
@@ -257,9 +260,15 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
             return new IntegerExpression(Long.decode(ctx.Literal().getText()),
                     ctx.start.getLine(), ctx.start.getCharPositionInLine());
         }
-        if (ctx.lenArrayExpression() != null) {
-            return visitLenArrayExpression(ctx.lenArrayExpression());
+        if (ctx.functionCall() != null) {
+            return visitFunctionCall(ctx.functionCall());
         }
+        if (ctx.Identifier() != null) {
+            return new VariableCallExpression(ctx.Identifier().getText(), ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        }
+        /*if (ctx.lenArrayExpression() != null) {
+            return visitLenArrayExpression(ctx.lenArrayExpression());
+        }*/
         throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
     }
 
@@ -400,16 +409,13 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
         if (ctx.atomicExpression() != null) {
             return visitAtomicExpression(ctx.atomicExpression());
         }
-        if (ctx.integerExpression() != null) {
-            return visitIntegerExpression(ctx.integerExpression());
-        }
-        if (ctx.unknownTypeExpression() != null) {
-            return visitUnknownTypeExpression(ctx.unknownTypeExpression());
+        if (ctx.expression() != null) {
+            return visitExpression(ctx.expression());
         }
         throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
     }
 
-    @Override
+    /*@Override
     public ArrayLenExpression visitLenArrayExpression(langParser.LenArrayExpressionContext ctx) {
         if (ctx == null) {
             throw new NullParsingException();
@@ -473,9 +479,9 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
             return visitUnknownTypeExpression(ctx.unknownTypeExpression());
         }
         throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }
+    }*/
 
-    @Override
+    /*@Override
     public ArrayOperationExpression.Operation visitArrayOperationExpressionRight(
             langParser.ArrayOperationExpressionRightContext ctx
     ) {
@@ -502,18 +508,18 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
                     ctx.start.getLine(), ctx.start.getCharPositionInLine());
         }
         throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }
+    }*/
 
-    @Override
+    /*@Override
     public ArrayExpression visitArrayBase(langParser.ArrayBaseContext ctx) {
         if (ctx == null) {
             throw new NullParsingException();
         }
         return new ArrayExpression(ctx.expression().stream().map(this::visitExpression).collect(Collectors.toList()),
                 ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }
+    }*/
 
-    @Override
+    /*@Override
     public ArrayGetExpression visitGetElement(langParser.GetElementContext ctx) {
         if (ctx == null) {
             throw new NullParsingException();
@@ -529,5 +535,5 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
                     ctx.start.getLine(), ctx.start.getCharPositionInLine());
         }
         throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }
+    }*/
 }
