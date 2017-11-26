@@ -1,0 +1,24 @@
+group 'svidchenko'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'antlr'
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments += ['-package', 'ru.spbau.mit.parser', '-visitor']
+    outputDirectory = new File("$buildDir/generated-src/antlr/main/ru/spbau/mit/parser")
+}
+compileJava.dependsOn generateGrammarSource
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile "org.antlr:antlr4-runtime:4.7"
+    antlr "org.antlr:antlr4:4.7"
+}
