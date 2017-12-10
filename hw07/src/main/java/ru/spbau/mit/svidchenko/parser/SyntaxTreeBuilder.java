@@ -73,6 +73,9 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
         if (ctx.if_st() != null) {
             return visitIf_st(ctx.if_st());
         }
+        if (ctx.io_st() != null) {
+            return visitIo_st(ctx.io_st());
+        }
         if (ctx.while_st() != null) {
             return visitWhile_st(ctx.while_st());
         }
@@ -91,6 +94,30 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
             throw new NullParsingException();
         }
         return new ImportStatement(ctx.start.getLine(), ctx.start.getCharPositionInLine(), ctx.Path().getText());
+    }
+
+    @Override
+    public Statement visitIo_st(langParser.Io_stContext ctx) {
+        if (ctx == null) {
+            throw new NullParsingException();
+        }
+        if (ctx.read() != null) {
+            return visitRead(ctx.read());
+        }
+        if (ctx.write() != null) {
+            return visitWrite(ctx.write());
+        }
+        throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+    }
+
+    @Override
+    public ReadStatement visitRead(langParser.ReadContext ctx) {
+        return new ReadStatement(ctx.start.getLine(), ctx.start.getCharPositionInLine(), ctx.Identifier().getText());
+    }
+
+    @Override
+    public WriteStatement visitWrite(langParser.WriteContext ctx) {
+        return new WriteStatement(ctx.start.getLine(), ctx.start.getCharPositionInLine(), visitExpression(ctx.expression()));
     }
 
     @Override
@@ -208,48 +235,11 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
         if (ctx.binaryExpression() != null) {
             return visitBinaryExpression(ctx.binaryExpression());
         }
-        /*if (ctx.arrayExpression() != null) {
-            return visitArrayExpression(ctx.arrayExpression());
-        }*/
         if (ctx.atomicExpression() != null) {
             return visitAtomicExpression(ctx.atomicExpression());
         }
-        /*if (ctx.unknownTypeExpression() != null) {
-            return visitUnknownTypeExpression(ctx.unknownTypeExpression());
-        }*/
         throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
     }
-
-    /*@Override
-    public Expression visitUnknownTypeExpression(langParser.UnknownTypeExpressionContext ctx) {
-        if (ctx == null) {
-            throw new NullParsingException();
-        }
-        if (ctx.functionCall() != null) {
-            return visitFunctionCall(ctx.functionCall());
-        }
-        if (ctx.Identifier() != null) {
-            return new VariableCallExpression(ctx.Identifier().getText(), ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        }
-        throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }
-
-    @Override
-    public Expression visitIntegerExpression(langParser.IntegerExpressionContext ctx) {
-        if (ctx == null) {
-            throw new NullParsingException();
-        }
-        if (ctx.integerExpression() != null) {
-            return visitIntegerExpression(ctx.integerExpression());
-        }
-        if (ctx.atomicExpression() != null) {
-            return visitAtomicExpression(ctx.atomicExpression());
-        }
-        if (ctx.binaryExpression() != null) {
-            return visitBinaryExpression(ctx.binaryExpression());
-        }
-        throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }*/
 
     @Override
     public Expression visitAtomicExpression(langParser.AtomicExpressionContext ctx) {
@@ -266,9 +256,6 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
         if (ctx.Identifier() != null) {
             return new VariableCallExpression(ctx.Identifier().getText(), ctx.start.getLine(), ctx.start.getCharPositionInLine());
         }
-        /*if (ctx.lenArrayExpression() != null) {
-            return visitLenArrayExpression(ctx.lenArrayExpression());
-        }*/
         throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
     }
 
@@ -414,126 +401,4 @@ public class SyntaxTreeBuilder extends AbstractParseTreeVisitor<Node> implements
         }
         throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
     }
-
-    /*@Override
-    public ArrayLenExpression visitLenArrayExpression(langParser.LenArrayExpressionContext ctx) {
-        if (ctx == null) {
-            throw new NullParsingException();
-        }
-        if (ctx.arrayExpression() != null) {
-            return new ArrayLenExpression(visitArrayExpression(ctx.arrayExpression()),
-                    ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        }
-        if (ctx.unknownTypeExpression() != null) {
-            return new ArrayLenExpression(visitUnknownTypeExpression(ctx.unknownTypeExpression()),
-                    ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        }
-        if (ctx.arrayBase() != null) {
-            return new ArrayLenExpression(visitArrayBase(ctx.arrayBase()),
-                    ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        }
-        throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }
-
-    @Override
-    public Expression visitArrayExpression(langParser.ArrayExpressionContext ctx) {
-        if (ctx == null) {
-            throw new NullParsingException();
-        }
-        if (ctx.arrayExpression() != null) {
-            return visitArrayExpression(ctx.arrayExpression());
-        }
-        if (ctx.unknownTypeExpression() != null) {
-            return visitUnknownTypeExpression(ctx.unknownTypeExpression());
-        }
-        if (ctx.arrayBase() != null) {
-            return visitArrayBase(ctx.arrayBase());
-        }
-        if (ctx.arrayOperationExpression() != null) {
-            return visitArrayOperationExpression(ctx.arrayOperationExpression());
-        }
-        throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }
-
-    @Override
-    public ArrayOperationExpression visitArrayOperationExpression(langParser.ArrayOperationExpressionContext ctx) {
-        if (ctx == null) {
-            throw new NullParsingException();
-        }
-        return new ArrayOperationExpression(
-                visitArrayOperationExpressionLeft(ctx.arrayOperationExpressionLeft()),
-                ctx.arrayOperationExpressionRight().stream().map(this::visitArrayOperationExpressionRight)
-                        .collect(Collectors.toList()),
-                ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }
-
-    @Override
-    public Expression visitArrayOperationExpressionLeft(langParser.ArrayOperationExpressionLeftContext ctx) {
-        if (ctx == null) {
-            throw new NullParsingException();
-        }
-        if (ctx.arrayBase() != null) {
-            return visitArrayBase(ctx.arrayBase());
-        }
-        if (ctx.unknownTypeExpression() != null) {
-            return visitUnknownTypeExpression(ctx.unknownTypeExpression());
-        }
-        throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }*/
-
-    /*@Override
-    public ArrayOperationExpression.Operation visitArrayOperationExpressionRight(
-            langParser.ArrayOperationExpressionRightContext ctx
-    ) {
-        if (ctx == null) {
-            throw new NullParsingException();
-        }
-        if (ctx.arrayBase() != null) {
-            return new ArrayOperationExpression.Operation(ctx.BinArrOp().getText(), visitArrayBase(ctx.arrayBase()),
-                    ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        }
-        if (ctx.unknownTypeExpression() != null) {
-            return new ArrayOperationExpression.Operation(ctx.BinArrOp().getText(),
-                    visitUnknownTypeExpression(ctx.unknownTypeExpression()),
-                    ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        }
-        if (ctx.atomicExpression() != null) {
-            return new ArrayOperationExpression.Operation(ctx.BinArrOp().getText(),
-                    visitAtomicExpression(ctx.atomicExpression()),
-                    ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        }
-        if (ctx.expression() != null) {
-            return new ArrayOperationExpression.Operation(ctx.BinArrOp().getText(),
-                    visitExpression(ctx.expression()),
-                    ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        }
-        throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }*/
-
-    /*@Override
-    public ArrayExpression visitArrayBase(langParser.ArrayBaseContext ctx) {
-        if (ctx == null) {
-            throw new NullParsingException();
-        }
-        return new ArrayExpression(ctx.expression().stream().map(this::visitExpression).collect(Collectors.toList()),
-                ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }*/
-
-    /*@Override
-    public ArrayGetExpression visitGetElement(langParser.GetElementContext ctx) {
-        if (ctx == null) {
-            throw new NullParsingException();
-        }
-        if (ctx.unknownTypeExpression() != null) {
-            return new ArrayGetExpression(visitArrayExpression(ctx.arrayExpression()),
-                    visitUnknownTypeExpression(ctx.unknownTypeExpression()),
-                    ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        }
-        if (ctx.integerExpression() != null) {
-            return new ArrayGetExpression(visitArrayExpression(ctx.arrayExpression()),
-                    visitIntegerExpression(ctx.integerExpression()),
-                    ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        }
-        throw new UnknownParsingException(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-    }*/
 }

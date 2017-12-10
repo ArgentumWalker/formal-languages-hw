@@ -38,10 +38,16 @@ statement
     | valueAssignment
     | return_st
     | import_st
+    | io_st
     ;
 
 return_st: 'return' expression;
 import_st: 'import' '"' Path '"';
+
+//IO
+io_st: read | write;
+read: 'read' Identifier;
+write: 'write' expression;
 
 //Function
 
