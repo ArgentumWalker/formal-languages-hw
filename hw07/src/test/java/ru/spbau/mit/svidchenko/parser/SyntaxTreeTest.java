@@ -44,7 +44,9 @@ public class SyntaxTreeTest {
             "fun foo() {return 2}",
             "fun foo(a) {return a}",
             "fun foo() {return 2} foo()",
-            "fun foo(a) {return a} foo(2)"
+            "fun foo(a) {return a} foo(2)",
+            "write 2",
+            "var a read a"
     );
 
     @Test
