@@ -24,14 +24,13 @@ Whitespace : (' ' | '\t' | '\r'| '\n') -> skip;
 //Base
 file: block;
 
-block: statement*;
+block: (statement';')+;
 
 blockWithBraces: '{' block '}';
 
 statement
     : function
     | variable
-    | expression
     | while_st
     | if_st
     | assignment
