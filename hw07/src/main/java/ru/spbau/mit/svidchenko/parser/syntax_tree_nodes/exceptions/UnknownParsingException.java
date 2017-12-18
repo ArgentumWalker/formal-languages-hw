@@ -1,6 +1,6 @@
 package ru.spbau.mit.svidchenko.parser.syntax_tree_nodes.exceptions;
 
-public class UnknownParsingException extends RuntimeException {
+public class UnknownParsingException extends ParsingException {
     private final long line;
     private final long col;
 
