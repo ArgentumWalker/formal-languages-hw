@@ -5,6 +5,8 @@ import org.antlr.v4.runtime.CharStreams;
 import ru.spbau.mit.parser.langLexer;
 import ru.spbau.mit.parser.langParser;
 import ru.spbau.mit.svidchenko.parser.syntax_tree_nodes.Node;
+import ru.spbau.mit.svidchenko.parser.syntax_tree_nodes.exceptions.SomeParsingErrorsException;
+import ru.spbau.mit.svidchenko.parser.syntax_tree_nodes.exceptions.UnknownParsingException;
 import ru.spbau.mit.svidchenko.parser.syntax_tree_nodes.other.CodeBlock;
 
 import java.io.File;
@@ -46,13 +48,21 @@ public class SyntaxTree {
         langLexer lexer = new langLexer(CharStreams.fromString(code));
         langParser parser = new langParser(new BufferedTokenStream(lexer));
         SyntaxTreeBuilder builder = new SyntaxTreeBuilder();
-        return new SyntaxTree(builder.visitFile(parser.file()));
+        SyntaxTree result = new SyntaxTree(builder.visitFile(parser.file()));
+        if (parser.getNumberOfSyntaxErrors() > 0) {
+            throw new SomeParsingErrorsException();
+        }
+        return result;
     }
 
     public static SyntaxTree buildSyntaxTree(File file) throws IOException {
         langLexer lexer = new langLexer(CharStreams.fromPath(Paths.get(file.getAbsolutePath())));
         langParser parser = new langParser(new BufferedTokenStream(lexer));
         SyntaxTreeBuilder builder = new SyntaxTreeBuilder();
-        return new SyntaxTree(builder.visitFile(parser.file()));
+        SyntaxTree result = new SyntaxTree(builder.visitFile(parser.file()));
+        if (parser.getNumberOfSyntaxErrors() > 0) {
+            throw new SomeParsingErrorsException();
+        }
+        return result;
     }
 }

@@ -1,5 +1,6 @@
 package ru.spbau.mit.svidchenko.parser;
 
+import ru.spbau.mit.svidchenko.parser.syntax_tree_nodes.exceptions.ParsingException;
 import ru.spbau.mit.svidchenko.parser.syntax_tree_nodes.exceptions.UnknownParsingException;
 
 import java.io.*;
@@ -16,7 +17,7 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Can't read file");
             return;
-        } catch (UnknownParsingException e) {
+        } catch (ParsingException e) {
             System.out.println(e.getMessage());
             return;
         }

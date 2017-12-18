@@ -22,22 +22,23 @@ Whitespace : (' ' | '\t' | '\r'| '\n') -> skip;
 
 //PARSER RULES
 //Base
-file: block;
+file: block EOF;
 
-block: (statement';')+;
+block: (statement)+;
 
 blockWithBraces: '{' block '}';
 
 statement
     : function
-    | variable
+    | variable';'
     | while_st
     | if_st
-    | assignment
-    | valueAssignment
-    | return_st
-    | import_st
-    | io_st
+    | assignment';'
+    | valueAssignment';'
+    | return_st';'
+    | import_st';'
+    | io_st';'
+    | expression';'
     ;
 
 return_st: 'return' expression;
