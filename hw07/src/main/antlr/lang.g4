@@ -59,9 +59,9 @@ functionCall: Identifier '(' (arguments)? ')';
 arguments: expression (',' expression)*;
 
 //Variables
-variable: 'var' Identifier ('=' expression)?;
+variable: 'var' Identifier (':=' expression)?;
 
-assignment: Identifier '=' expression;
+assignment: Identifier ':=' expression;
 
 //Complex statements
 while_st: 'while' '(' expression ')' blockWithBraces;

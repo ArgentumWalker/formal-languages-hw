@@ -7,7 +7,6 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) {
-        SyntaxTree.buildSyntaxTree("fun f() { read x ;\nx := 1 ;\n y = 12 ;\ntw\nx (); }").print();
         if (args.length != 1) {
             System.out.println("Wrong number of arguments");
             return;

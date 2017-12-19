@@ -24,6 +24,6 @@ public class VariableAssignStatement extends Statement {
 
     @Override
     public String getDescription() {
-        return "Assign \"" + name + "\" by link";
+        return "Assign \"" + name + "\"";
     }
 }

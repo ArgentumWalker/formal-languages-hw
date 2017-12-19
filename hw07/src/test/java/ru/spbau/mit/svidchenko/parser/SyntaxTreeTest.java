@@ -39,9 +39,9 @@ public class SyntaxTreeTest {
             "if (1) {(1);} else {(1);}",
             "while (0) {(1);}",
             "var a;",
-            "var a = 2;",
-            "var a; a = 2;",
-            "var a = 2; while (a) {a = a - 1;}",
+            "var a := 2;",
+            "var a; a := 2;",
+            "var a := 2; while (a) {a := a - 1;}",
             "fun foo() {(2);}",
             "fun foo() {return 2;}",
             "fun foo(a) {return a;}",
@@ -52,9 +52,9 @@ public class SyntaxTreeTest {
     );
 
     private List<String> failTests = Arrays.asList(
-            "var a = 2", //Потеря точки с запятой
-            "var a = 2 a;", //Потеря точки с запятой (или лишний символ)
-            "var a = 2; ,,,,,,,", //Некорректный текст в конце кода
+            "var a := 2", //Потеря точки с запятой
+            "var a := 2 a;", //Потеря точки с запятой (или лишний символ)
+            "var a := 2; ,,,,,,,", //Некорректный текст в конце кода
             "if (1) {(1);} else {;}", //Пустой statement
             "if (1 {(1);} else {(0);}", //Незакрытая скобка
             "if 1 {(1);} else {(0);}", //Отсутствие скобок
@@ -70,7 +70,7 @@ public class SyntaxTreeTest {
             "2 ** 3;", //Несуществующая операция
             "2 *;", //Нехватает аргумента
             "* 3;", //Нехватает аргумента
-            "fun f() { read x ;\nx = 1 ;\n y = 12 ;\ntw\nx (); }"
+            "fun f() { read x ;\nx := 1 ;\n y := 12 ;\ntw\nx (); }"
     );
 
     @Test
