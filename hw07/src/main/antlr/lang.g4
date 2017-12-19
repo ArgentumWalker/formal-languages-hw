@@ -34,11 +34,10 @@ statement
     | while_st
     | if_st
     | assignment';'
-    | valueAssignment';'
     | return_st';'
     | import_st';'
     | io_st';'
-    | expression';'
+    | ('(' expression ')' | functionCall)';'
     ;
 
 return_st: 'return' expression;
@@ -62,9 +61,7 @@ arguments: expression (',' expression)*;
 //Variables
 variable: 'var' Identifier ('=' expression)?;
 
-valueAssignment: Identifier '=' expression;
-
-assignment: Identifier ':=' expression;
+assignment: Identifier '=' expression;
 
 //Complex statements
 while_st: 'while' '(' expression ')' blockWithBraces;

@@ -1,7 +1,6 @@
 package ru.spbau.mit.svidchenko.parser;
 
-import org.antlr.v4.runtime.BufferedTokenStream;
-import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.*;
 import ru.spbau.mit.parser.langLexer;
 import ru.spbau.mit.parser.langParser;
 import ru.spbau.mit.svidchenko.parser.syntax_tree_nodes.Node;
